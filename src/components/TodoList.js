@@ -1,18 +1,30 @@
 import React, {Component} from 'react';
+import storage from "../model/storage";
+
+const TODO_LIST_NAME = 'todoList';
 
 class TodoList extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            todoList: [
-                {content: '代办1', done: false},
-                {content: '代办2', done: false},
-                {content: '代办3', done: false},
-                {content: '代办4', done: false},
-            ]
+            todoList: []
         }
     }
+
+
+    componentDidMount() {
+
+        let todoList = this.state.todoList;
+        let todoListFormStorage = storage.get(TODO_LIST_NAME);
+
+        if (todoListFormStorage) {
+            todoList.push(...todoListFormStorage);
+        }
+
+        this.setState({todoList: todoList});
+    }
+
 
     render() {
         return (
@@ -26,21 +38,23 @@ class TodoList extends Component {
                 <div>
                     <h2>未完成</h2>
                     {
-                        // 未完成
-                        this.state.todoList
-                            .map((value, index) => {
-                                if(value.done){
-                                    return;
-                                }
-                                return (
-                                    <div key={index}>
-                                        <input type="checkbox" checked={value.done} id={"todoItem" + index}
-                                               onChange={this.setTotoItemStatus.bind(this, index)}/>
-                                        <label htmlFor={"todoItem" + index}>{value.content}</label>
-                                        <button onClick={this.removeTodoItem.bind(this, index)}>删除</button>
-                                    </div>
-                                )
-                            })
+                        this.state.todoList ?
+                            // 未完成
+                            this.state.todoList
+                                .map((value, index) => {
+                                    if (value.done) {
+                                        return;
+                                    }
+                                    return (
+                                        <div key={index}>
+                                            <input type="checkbox" checked={value.done} id={"todoItem" + index}
+                                                   onChange={this.setTotoItemStatus.bind(this, index)}/>
+                                            <label htmlFor={"todoItem" + index}>{value.content}</label>
+                                            <button onClick={this.removeTodoItem.bind(this, index)}>删除</button>
+                                        </div>
+                                    )
+                                })
+                            : ''
                     }
 
                     <br/>
@@ -49,20 +63,22 @@ class TodoList extends Component {
                     <h2>已完成</h2>
                     {
                         // 已完成
-                        this.state.todoList
-                            .map((value, index) => {
-                                if(!value.done){
-                                    return;
-                                }
-                                return (
-                                    <div key={index}>
-                                        <input type="checkbox" checked={value.done} id={"doneItem" + index}
-                                               onChange={this.setTotoItemStatus.bind(this, index)}/>
-                                        <label htmlFor={"doneItem" + index}>{value.content}</label>
-                                        <button onClick={this.removeTodoItem.bind(this, index)}>删除</button>
-                                    </div>
-                                )
-                            })
+                        this.state.todoList ?
+                            this.state.todoList
+                                .map((value, index) => {
+                                    if (!value.done) {
+                                        return;
+                                    }
+                                    return (
+                                        <div key={index}>
+                                            <input type="checkbox" checked={value.done} id={"doneItem" + index}
+                                                   onChange={this.setTotoItemStatus.bind(this, index)}/>
+                                            <label htmlFor={"doneItem" + index}>{value.content}</label>
+                                            <button onClick={this.removeTodoItem.bind(this, index)}>删除</button>
+                                        </div>
+                                    )
+                                })
+                            : ''
                     }
                 </div>
             </div>
@@ -77,22 +93,27 @@ class TodoList extends Component {
 
         let todoList = this.state.todoList;
         todoList.push({content: inputValue, done: false});
-        this.setState({todoList:todoList});
+        this.setState({todoList: todoList});
         // input 复位
         e.target.value = '';
+
+        // 写入缓存
+        storage.set(TODO_LIST_NAME, this.state.todoList);
     };
 
     removeTodoItem = (index2remove) => {
         let todoList = this.state.todoList;
         todoList = todoList.filter((value, index) => index !== index2remove);
         console.log(todoList);
-        this.setState({todoList:todoList});
+        this.setState({todoList: todoList});
+        storage.set(TODO_LIST_NAME, this.state.todoList);
     };
 
     setTotoItemStatus = (value) => {
         let todoList = this.state.todoList;
         todoList[value].done = !todoList[value].done;
         this.setState({todoList: todoList});
+        storage.set(TODO_LIST_NAME, this.state.todoList);
     };
 
 }

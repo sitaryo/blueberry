@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import storage from '../model/storage';
 
 class Login extends Component {
     constructor(props) {
@@ -25,7 +24,6 @@ class Login extends Component {
         e.preventDefault();
         if (this.refs.username.value === 'admin' && this.refs.password.value === '123456') {
             this.props.loginSuccess();
-            storage.set('isLogin',true);
             return;
         }
         alert('login fail');

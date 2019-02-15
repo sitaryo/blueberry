@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import storage from "../model/storage";
+import "../assert/css/index.css"
 
 const TODO_LIST_NAME = 'todoList';
 
@@ -30,7 +31,7 @@ class TodoList extends Component {
         return (
             <div>
                 {/*header*/}
-                <div style={{paddingTop: 50, background: 'black'}}>
+                <div className="todo-list-header">
                     <label style={{color: 'white', fontSize: 24}}>TODO LIST</label>
                     <input type="text" value={this.state.content} onKeyUp={this.addTodoList}/>
                 </div>

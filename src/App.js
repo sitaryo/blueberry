@@ -1,14 +1,9 @@
-import React, {Component} from 'react';
-import Father from "./components/Father-Son/Father";
+import React, {Component} from "react";
 import {BrowserRouter as Router, Link, Route} from "react-router-dom";
-import Home from "./components/Home";
-import News from "./components/News";
-import './assert/css/index.css'
-import TodoList from "./components/TodoList";
-import NewsContent from "./components/NewsContent";
+import "./assert/css/index.css";
 import Login from "./components/Login";
-import stroage from "./model/storage";
-import Admin from "./components/Admin";
+import storage from "./model/storage";
+import routes from "./model/route";
 
 class App extends Component {
 
@@ -19,15 +14,21 @@ class App extends Component {
         }
     }
 
-    loginSuccess=()=>{
-      this.setState({isLogin:true});
+    loginSuccess = () => {
+        this.setState({isLogin: true});
+        storage.set('isLogin',true);
+    };
+
+    logout = () => {
+        this.setState({isLogin:false});
+        storage.set('isLogin',false);
     };
 
 
     componentDidMount() {
-        let isLogin = stroage.get('isLogin');
-        if(isLogin){
-            this.setState({isLogin:isLogin});
+        let isLogin = storage.get('isLogin');
+        if (isLogin) {
+            this.setState({isLogin: isLogin});
         }
     }
 
@@ -35,7 +36,7 @@ class App extends Component {
     render() {
 
         // 是否已登陆
-        if(!this.state.isLogin){
+        if (!this.state.isLogin) {
             // 未登录 渲染登录页面
             return <Login loginSuccess={this.loginSuccess}/>;
         }
@@ -49,17 +50,31 @@ class App extends Component {
                         <Link to="/father">Father-Son</Link>
                         <Link to="/news">News</Link>
                         <Link to="/todoList">TodoList</Link>
-                        <Link to="/admin">TodoList</Link>
+                        <Link to="/admin">Admin</Link>
+                        <button className="logout-btn" onClick={this.logout}>logout</button>
                     </header>
 
                     <div>
-                        {/*exact 严格模式 如果不用严格模式 /home 会 匹配 /home 和 / */}
-                        <Route exact path="/" component={Home}/>
-                        <Route path="/news" component={News}/>
-                        <Route path="/content" component={NewsContent}/>
-                        <Route path="/father" component={Father}/>
-                        <Route path="/todoList" component={TodoList}/>
-                        <Route path="/admin" component={Admin}/>
+                        {
+                            routes.map((value, index) => {
+
+                                if (value.exact) {
+                                    return <Route key={index}
+                                                  exact
+                                                  path={value.path}
+                                                  render={props => (
+                                                      // 将 props routes 传入对应组件中
+                                                      <value.component {...props} routes={value.routes} id={{id: 12}}/>
+                                                  )}/>;
+                                }
+
+                                return <Route key={index}
+                                              path={value.path}
+                                              render={props => (
+                                                  <value.component {...props} routes={value.routes}/>
+                                              )}/>;
+                            })
+                        }
                     </div>
                 </div>
             </Router>

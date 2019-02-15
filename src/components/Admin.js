@@ -1,11 +1,8 @@
 import React, {Component} from 'react';
-import AdminList from "./Home/AdminList";
 import {Link, Route} from "react-router-dom";
-import AdminInfo from "./Home/AdminInfo";
 
 class Admin extends Component {
     render() {
-        console.log(this.props.match);
         return (
             <div>
                 <div className="home-content">
@@ -16,8 +13,26 @@ class Admin extends Component {
                         </ul>
                     </div>
                     <div className="right">
-                        <Route exact path={`${this.props.match.path}/`} component={AdminInfo}/>
-                        <Route path={`${this.props.match.path}/adminList`} component={AdminList}/>
+                        {
+                            this.props.routes.map((value, index) => {
+
+                                if (value.exact) {
+                                    return <Route key={index}
+                                                  exact
+                                                  path={`${this.props.match.path}${value.path}`}
+                                                  render={props => (
+                                                      // 将 props routes 传入对应组件中
+                                                      <value.component {...props} routes={value.routes}/>
+                                                  )}/>;
+                                }
+
+                                return <Route key={index}
+                                              path={`${this.props.match.path}${value.path}`}
+                                              render={props => (
+                                                  <value.component {...props} routes={value.routes}/>
+                                              )}/>;
+                            })
+                        }
                     </div>
                 </div>
             </div>

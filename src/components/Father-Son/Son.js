@@ -52,4 +52,9 @@ Son.propTypes = {
     fatherName:PropTypes.string
 };
 
+Son.defaultProps = {
+    father:{},
+    fatherName:''
+};
+
 export default Son;
